@@ -3,14 +3,19 @@ import React, {Component} from 'react';
 class Movies extends Component {
   constructor() {
     super();
-    this.state = { movies: [] };
+    this.state = {
+      loading: false,
+      movies: []
+    };
+    this.fetchMovies = this.fetchMovies.bind(this);
   }
 
-  componentDidMount() {
+  fetchMovies() {
+    this.setState({ loading: true });
     fetch('https://facebook.github.io/react-native/movies.json')
     .then((response) => response.json())
     .then((responseJson) => {
-      this.setState({movies: responseJson.movies});
+      this.setState({ loading: false, movies: responseJson.movies});
     })
     .catch((error) => {
       console.error(error);
@@ -22,7 +27,8 @@ class Movies extends Component {
 
     return (
       <div>
-        <MovieList movies={this.state.movies} />
+        <button className="Button" onClick={this.fetchMovies}>Click me!</button>
+        { this.state.loading ? <div>Loading...</div> : <MovieList movies={this.state.movies} /> }
       </div>
     );
   }
