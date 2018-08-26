@@ -1,37 +1,47 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { fetchMoviesIfNeeded } from './actions/index'
 
 class Movies extends Component {
-  constructor() {
-    super();
-    this.state = {
-      loading: false,
-      movies: []
-    };
-    this.fetchMovies = this.fetchMovies.bind(this);
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
   }
 
-  fetchMovies() {
-    this.setState({ loading: true });
-    fetch('https://facebook.github.io/react-native/movies.json')
-    .then((response) => response.json())
-    .then((responseJson) => {
-      this.setState({ loading: false, movies: responseJson.movies});
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  handleClick = (e) => {
+    e.preventDefault()
+    this.props.dispatch(fetchMoviesIfNeeded())
   }
 
   render () {
-    const MovieList = ({movies}) => movies.map(movie =><h2 key={movie.id}>{movie.title} </h2>)
+    const {loading, movies} = this.props;
 
     return (
       <div>
-        <button className="Button" onClick={this.fetchMovies}>Click me!</button>
-        { this.state.loading ? <div>Loading...</div> : <MovieList movies={this.state.movies} /> }
+        <button className="Button" onClick={this.handleClick}>Click me!</button>
+        { loading && movies.length === 0 ? 
+          <div>Loading...</div> : 
+          movies.map(movie =><h2 key={movie.id}>{movie.title} </h2>)
+        }
       </div>
     );
   }
 }
 
-export default Movies; 
+
+const mapStateToProps = state => {
+  const {
+    movies,
+    loading
+  } = state || {
+    loading: true,
+    movies: []
+  }
+
+  return {
+    movies,
+    loading
+  }
+}
+
+export default connect(mapStateToProps)(Movies); 

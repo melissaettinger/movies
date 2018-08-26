@@ -2,6 +2,12 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Movies from './Movies';
+import { createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import movies from './reducers';
+
+const store = createStore(movies, applyMiddleware(thunk));
 
 class App extends Component {
   render() {
@@ -11,7 +17,9 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Movies</h1>
         </header>
-        <Movies />
+        <Provider store={store}>
+          <Movies />
+        </Provider>
       </div>
     );
   }
